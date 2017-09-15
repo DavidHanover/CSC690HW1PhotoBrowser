@@ -69,9 +69,8 @@ class Window(QWidget):
         self.bigLabel.setStyleSheet("border: 20px solid orange")
         self.show()
 
-    def selectionMorpher(self, inputK):
-        if inputK == 16777235:
-            self.initUI2()
+    def selectionMorpher(self, prev):
+        self.labels[prev].setStyleSheet("border: 10px solid purple")
         self.labels[self.index].setStyleSheet("border: 10px solid orange")
 
     def keyPressEvent(self, event):
@@ -82,9 +81,18 @@ class Window(QWidget):
             self.mode = False
             self.initUI1()
         if event.key()==16777234:
+            tmp = self.index
             self.index -= 1
-        if event.key()==16777236:
+            if self.index == -1:
+                self.index = 4
+            self.selectionMorpher(tmp)
+        if event.key() == 16777236:
+            tmp = self.index
             self.index += 1
+            if self.index == 5:
+                self.index = 0
+            self.selectionMorpher(tmp)
+
         if event.key()==87:
             print(self.index)
 
