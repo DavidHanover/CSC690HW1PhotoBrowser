@@ -9,15 +9,11 @@ class Window(QWidget):
         super().__init__()
         self.title = 'PyQt5 image display'
         self.index = 0
-        self.mode = False
-        if self.mode is False:
-            self.initUI1()
-        else:
-            if self.mode is True:
-                self.initUI2()
+        self.initUI()
+
         self.selectionMorpher(0)
 
-    def initUI1(self):
+    def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(100, 100, 1600, 900)
         self.setStyleSheet("background-color: skyblue")
@@ -58,16 +54,6 @@ class Window(QWidget):
 
         self.show()
 
-    def initUI2(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(100, 100, 1600, 900)
-        self.setStyleSheet("background-color: skyblue")
-
-        # Create labels
-        self.bigLabel = QLabel(self)
-        self.bigLabel.resize(1000, 1000)
-        self.bigLabel.setStyleSheet("border: 20px solid orange")
-        self.show()
 
     def selectionMorpher(self, prev):
         self.labels[prev].setStyleSheet("border: 10px solid purple")
@@ -76,10 +62,9 @@ class Window(QWidget):
     def keyPressEvent(self, event):
         print(event.key())
         if event.key()==16777235:
-            selectionMorpher(event.key())
+            tmp = 0
         if event.key()==16777237:
-            self.mode = False
-            self.initUI1()
+            tmp = 0
         if event.key()==16777234:
             tmp = self.index
             self.index -= 1
