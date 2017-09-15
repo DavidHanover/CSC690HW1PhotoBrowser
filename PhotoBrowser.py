@@ -15,7 +15,7 @@ class Window(QWidget):
         else:
             if self.mode is True:
                 self.initUI2()
-        self.selectionMorpher()
+        self.selectionMorpher(0)
 
     def initUI1(self):
         self.setWindowTitle(self.title)
@@ -59,19 +59,28 @@ class Window(QWidget):
         self.show()
 
     def initUI2(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(100, 100, 1600, 900)
+        self.setStyleSheet("background-color: skyblue")
 
+        # Create labels
+        self.bigLabel = QLabel(self)
+        self.bigLabel.resize(1000, 1000)
+        self.bigLabel.setStyleSheet("border: 20px solid orange")
         self.show()
 
     def selectionMorpher(self, inputK):
-
+        if inputK == 16777235:
+            self.initUI2()
         self.labels[self.index].setStyleSheet("border: 10px solid orange")
 
     def keyPressEvent(self, event):
         print(event.key())
         if event.key()==16777235:
-            self.mode = True
+            selectionMorpher(event.key())
         if event.key()==16777237:
             self.mode = False
+            self.initUI1()
         if event.key()==16777234:
             self.index -= 1
         if event.key()==16777236:
