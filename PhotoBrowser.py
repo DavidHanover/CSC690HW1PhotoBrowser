@@ -9,6 +9,7 @@ class Window(QWidget):
         super().__init__()
         self.title = 'PyQt5 image display'
         self.index = 0
+        self.mode = 0
         self.initUI()
 
         self.selectionMorpher(0)
@@ -62,9 +63,33 @@ class Window(QWidget):
     def keyPressEvent(self, event):
         print(event.key())
         if event.key()==16777235:
-            tmp = 0
+            if self.mode == 0:
+                self.mode = 1
+                self.labels[self.index].resize(1250, 650)
+                self.labels[self.index].move(100, 100)
+                i = self.index + 1
+                while True:
+                    if i == 5:
+                        i = 0
+                    if i == self.index:
+                        break
+                    self.labels[i].resize(0, 0)
+                    i += 1
+
+
         if event.key()==16777237:
-            tmp = 0
+            if self.mode == 1:
+                self.mode = 0
+
+                spacingNum = 50
+
+                for i in range(0, 5, 1):
+                    self.labels[i].resize(300, 300)
+                    self.labels[i].move(spacingNum, 150)
+                    self.labels[i].setStyleSheet("border: 10px solid purple")
+                    spacingNum += 302
+            self.labels[self.index].setStyleSheet("border: 10px solid orange")
+
         if event.key()==16777234:
             tmp = self.index
             self.index -= 1
