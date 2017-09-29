@@ -3,7 +3,7 @@
 # Date: [9-16-2017]
 # Compile: [Python]
 # Usage: [Run with Python]
-# System: [Running on Windows10 64bit, AMD Ryzen 7 chipset ]
+# System: [Running on Windows10 64bit, AMD Ryzen 7 chipset  AND Intel i7-6500u chipset]
 # Description: [Browses a selection of images titled "Donut1.jpg"
 # through "Donut10.jpg" located in the same folder as PhotoBrowser.py]
 #
@@ -15,7 +15,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtMultimedia import QSoundEffect
 
 
 class Window(QWidget):
@@ -85,6 +86,12 @@ class Window(QWidget):
 
         self.show()
 
+        self.sound1 = QSoundEffect()
+        self.sound2 = QSoundEffect()
+        self.sound1.setSource(QUrl.fromLocalFile('Click1.wav'))
+        self.sound2.setSource(QUrl.fromLocalFile('Click2.wav'))
+
+
     def selectionMorpher(self, prev):
         # not totally sure why i made this its own function....
         #  but it changes the highlight color, and changes the previous color back to normal
@@ -94,9 +101,10 @@ class Window(QWidget):
     def keyPressEvent(self, event):
         print(event.key())
         if event.key()==16777235:
-            # when up is hit, change mode if not already in mode 1
+            # when up is hit, change mode if not already in mode 1 & play sound2
             if self.mode == 0:
                 self.mode = 1
+                self.sound2.play()
                 # then resize label
                 self.labels[self.index].resize(800, 800)
                 self.labels[self.index].move(400, 50)
@@ -117,9 +125,11 @@ class Window(QWidget):
 
         if event.key()==16777237:
 
-            # when down is hit, toggle mode back to normal if not already
+
+            # when down is hit, toggle mode back to normal if not already & play sound1
             if self.mode == 1:
                 self.mode = 0
+                self.sound1.play()
 
                 spacingNum = 50
 
@@ -142,9 +152,10 @@ class Window(QWidget):
 
         if event.key() == 16777234:
 
-            # in zoomed mode, just change the pixmap you're currently viewing
+            # in zoomed mode, just change the pixmap you're currently viewing & play sound
             # IMO it's not a big deal, but this shifts the entire order in regular mode as well
             if self.mode == 1:
+                self.sound1.play()
                 for i in range(0, 5, 1):
                     self.indexes[i] -= 1
                     if self.indexes[i] == -1:
@@ -160,10 +171,14 @@ class Window(QWidget):
             if self.mode == 0:
                 tmp = self.index
                 self.index -= 1
+                if self.index!= -1:
+                    self.sound1.play()
+
 
                 # if you reach the left end, wrap around, and
                 if self.index == -1:
                     self.index = 4
+                    self.sound2.play()
 
                     # decrement the pixmap indexes by five
                     for i in range (0, 5, 1):
@@ -181,7 +196,8 @@ class Window(QWidget):
 
         if event.key() == 16777236:
 
-            # zoomed mode, just increment by one
+            # zoomed mode, just increment by one, & play sound
+            self.sound1.play()
             if self.mode == 1:
                 for i in range(0, 5, 1):
                     self.indexes[i] += 1
@@ -193,13 +209,16 @@ class Window(QWidget):
                         (self.pixmaps[self.indexes[i]]
                          .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
 
-            # regular mode, increment by five
+            # regular mode, increment by one & play sound 1
             if self.mode == 0:
                 tmp = self.index
                 self.index += 1
-                # if you reach right end, wrap around and
+                if self.index!=5:
+                    self.sound1.play()
+                # if you reach right end, wrap around, play sound2, and
                 if self.index == 5:
                     self.index = 0
+                    self.sound2.play()
                     # increment the pixmap indexes by five
                     for i in range (0, 5, 1):
                         for i in range (0, 5, 1):
@@ -215,6 +234,7 @@ class Window(QWidget):
 
         if event.key()==44:
             # if carrot left is hit, decrement the pixmap indexes by five
+            self.sound2.play()
             for i in range(0, 5, 1):
                 for i in range(0, 5, 1):
                     self.indexes[i] -= 1
@@ -230,6 +250,7 @@ class Window(QWidget):
 
         if event.key()==46:
             # if carrot right is hit, decrement the pixmap indexes by five
+            self.sound2.play()
             for i in range(0, 5, 1):
                 for i in range(0, 5, 1):
                     self.indexes[i] -= 1
