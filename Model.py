@@ -13,7 +13,7 @@
 # For now, the program only works with 10 pictures, but that can be easily changed in the future
 
 import sys
-from CSC690HW1PhotoBrowser import View, Controller
+import View, Controller
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QAction, QLineEdit, QMessageBox, QMainWindow
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QUrl, pyqtSlot, QCoreApplication

@@ -1,4 +1,5 @@
-from CSC690HW1PhotoBrowser import Model
+#import sys
+import Model, Controller
 from PyQt5.QtMultimedia import QSoundEffect
 from PyQt5.QtCore import Qt, QUrl
 

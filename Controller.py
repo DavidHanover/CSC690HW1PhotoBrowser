@@ -1,4 +1,6 @@
-from CSC690HW1PhotoBrowser import View
+import sys
+import Model
+import View
 
 class Control(View.Display):
     def keyPressEvent(self, event):
