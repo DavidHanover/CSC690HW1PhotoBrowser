@@ -26,7 +26,7 @@ class Window(QWidget):
         self.title = 'PyQt5 Photo Browser'
         self.index = 0
         self.mode = 0
-        self.initUI()
+        self.View.initUI()
 
         self.selectionMorpher(0)
 
@@ -73,11 +73,7 @@ class Window(QWidget):
 
 
 
-    def selectionMorpher(self, prev):
-        # not totally sure why i made this its own function....
-        #  but it changes the highlight color, and changes the previous color back to normal
-        self.labels[prev].setStyleSheet("border: 10px solid purple")
-        self.labels[self.index].setStyleSheet("border: 10px solid orange")
+
 
 
 
@@ -85,5 +81,5 @@ class Window(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = Window()
-    window = Display(window)
+    Controller.Control(View.Display(window))
     sys.exit(app.exec_())

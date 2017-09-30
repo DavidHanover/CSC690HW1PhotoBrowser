@@ -28,3 +28,9 @@ class Display(Model.Window):
         Model.Window.sound2 = QSoundEffect()
         Model.Window.sound1.setSource(QUrl.fromLocalFile('Click1.wav'))
         Model.Window.sound2.setSource(QUrl.fromLocalFile('Click2.wav'))
+
+        def selectionMorpher(self, prev):
+            # not totally sure why i made this its own function....
+            #  but it changes the highlight color, and changes the previous color back to normal
+            Model.Window.labels[prev].setStyleSheet("border: 10px solid purple")
+            Model.Window.labels[self.index].setStyleSheet("border: 10px solid orange")
