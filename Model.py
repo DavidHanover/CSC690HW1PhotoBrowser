@@ -81,5 +81,6 @@ class Window(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = Window()
-    Controller.Control(View.Display(window))
+    View.Display()
+
     sys.exit(app.exec_())
