@@ -197,8 +197,8 @@ class Window(QWidget):
         if event.key() == 16777236:
 
             # zoomed mode, just increment by one, & play sound
-            self.sound1.play()
             if self.mode == 1:
+                self.sound1.play()
                 for i in range(0, 5, 1):
                     self.indexes[i] += 1
                     if self.indexes[i] == 10:
