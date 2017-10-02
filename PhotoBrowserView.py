@@ -32,6 +32,9 @@ class Window(QWidget):
 
         self.selectionMorpher(0)
 
+        # Store labels
+        self.labels = []
+
         # Create labels
         self.label1 = QLabel(self)
         self.label2 = QLabel(self)
