@@ -5,7 +5,7 @@
 # Usage: [Run with Python]
 # System: [Running on Windows10 64bit, AMD Ryzen 7 chipset  AND Intel i7-6500u chipset]
 # Description: [Browses a selection of images titled "Donut1.jpg"
-# through "Donut10.jpg" located in the same folder as PhotoBrowser.py]
+# through "Donut10.jpg" located in the same folder as PhotoBrowserView.py]
 #
 # NOTE: If you wish to substitute test pictures for the Donut.jpgs, change
 # the strings in the QPixmap arguments that start at Line 56.
@@ -13,6 +13,7 @@
 # For now, the program only works with 10 pictures, but that can be easily changed in the future
 
 import sys
+import PhotoBrowserModel
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QUrl
@@ -20,19 +21,16 @@ from PyQt5.QtMultimedia import QSoundEffect
 
 
 class Window(QWidget):
-    def __init__(self):
+    def __init__(self, pBM):
         super().__init__()
+        self.photoBM = pBM
+
         self.title = 'PyQt5 Photo Browser'
         self.index = 0
         self.mode = 0
         self.initUI()
 
         self.selectionMorpher(0)
-
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(100, 100, 1600, 900)
-        self.setStyleSheet("background-color: skyblue")
 
         # Create labels
         self.label1 = QLabel(self)
@@ -41,11 +39,19 @@ class Window(QWidget):
         self.label4 = QLabel(self)
         self.label5 = QLabel(self)
 
-        # Store labels
-        self.labels = [self.label1, self.label2, self.label3, self.label4, self.label5]
+        self.Width = 1600;
+        self.widthSelector()
+        self.Length = ((self.Width/4)*3)
+
+
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(100, 100, 1600, 900)
+        self.setStyleSheet("background-color: skyblue")
+
 
         # Loop for initializing labels
-        spacingNum  = 50
+        spacingNum = 50
 
         for i in range (0, 5, 1):
             self.labels[i].resize(300, 300)
@@ -65,11 +71,7 @@ class Window(QWidget):
         self.pixmap9 = QPixmap("Donut9.jpg")
         self.pixmap10 = QPixmap("Donut10.jpg")
 
-        # Store pixmaps
-        self.pixmaps = [self.pixmap1, self.pixmap2, self.pixmap3,
-                        self.pixmap4, self.pixmap5, self.pixmap6,
-                        self.pixmap7, self.pixmap8, self.pixmap9,
-                        self.pixmap10]
+
 
         self.OGpixmaps = self.pixmaps
 
@@ -78,11 +80,7 @@ class Window(QWidget):
             self.pixmaps[i] = self.pixmaps[i].scaled(self.labels[i].size(), Qt.KeepAspectRatio)
             self.labels[i].setPixmap(self.pixmaps[i])
 
-        # Can't figure out how to access a QLabel's pixmap, so create array of
-        # indexes to keep track of pixmaps
-        self.indexes = []
-        for i in range(0, 5, 1):
-            self.indexes.append(i)
+
 
         self.show()
 
@@ -91,6 +89,9 @@ class Window(QWidget):
         self.sound1.setSource(QUrl.fromLocalFile('Click1.wav'))
         self.sound2.setSource(QUrl.fromLocalFile('Click2.wav'))
 
+    def widthSelector(self):
+        newWidth = input('Enter desired width:')
+        self.Width = newWidth
 
     def selectionMorpher(self, prev):
         # not totally sure why i made this its own function....
