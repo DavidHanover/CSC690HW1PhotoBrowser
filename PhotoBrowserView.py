@@ -15,8 +15,8 @@
 import sys
 from CSC690HW1PhotoBrowser import PhotoBrowserModel
 import pickle
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QListWidget, QAbstractButton
+from PyQt5.QtCore import Qt, QUrl, QObject, pyqtSlot
 from PyQt5.QtMultimedia import QSoundEffect
 
 
@@ -36,28 +36,28 @@ class pbView(QWidget):
         self.ySpace = int(self.len * 0.167)
         self.bigLabSiz = int(self.wid*0.5)
         self.pbModel = pbM
-        self.enterMD = QPushButton('Enter', self)
-        self.saveMD = QPushButton('Save', self)
-        self.enterMD.resize(100, 55)
-        self.saveMD.resize(100, 55)
-        self.enterMD.move(25, self.len-75)
-        self.saveMD.move(150, self.len-75)
-        self.enterMD.setFocusPolicy(Qt.NoFocus)
-        self.saveMD.setFocusPolicy(Qt.NoFocus)
-        self.enterMD.setVisible(False)
-        self.saveMD.setVisible(False)
         self.textbox = QLineEdit(self)
-        self.textbox.move(20, 20)
+        self.textbox.move(10, self.len-120)
         self.textbox.resize(280, 40)
         self.textbox.setFocusPolicy(Qt.ClickFocus)
+        self.textbox.setStyleSheet("background-color: Purple")
         self.textbox.setVisible(False)
         self.metaLists = []
         for j in range (0, 10, 1):
             self.metaLists.append([])
 
-        self.pickleList = []
-
+        self.tempList = []
         self.loadMetaData()
+
+        self.pListWidg = QListWidget(self)
+        self.pListWidg.resize(200, self.len-50)
+        self.pListWidg.move(self.wid-250, 25)
+        self.pListWidg.setVisible(False)
+
+        self.tListWidg = QListWidget(self)
+        self.tListWidg.resize(200, self.len-160)
+        self.tListWidg.move(50, 25)
+        self.tListWidg.setVisible(False)
 
 
         self.initUI()
@@ -99,6 +99,30 @@ class pbView(QWidget):
         self.sound2 = QSoundEffect()
         self.sound1.setSource(QUrl.fromLocalFile('Click1.wav'))
         self.sound2.setSource(QUrl.fromLocalFile('Click2.wav'))
+
+        self.enterMD = QPushButton('Enter', self)
+        self.enterMD.clicked.connect(self.addMtdt())
+        self.saveMD = QPushButton('Save', self)
+        self.enterMD.resize(100, 55)
+        self.saveMD.resize(100, 55)
+        self.enterMD.move(25, self.len - 75)
+        self.saveMD.move(150, self.len - 75)
+        self.enterMD.setFocusPolicy(Qt.NoFocus)
+        self.saveMD.setFocusPolicy(Qt.NoFocus)
+        self.enterMD.setStyleSheet("background-color: Orange")
+        self.saveMD.setStyleSheet("background-color: Orange")
+        self.enterMD.setVisible(False)
+        self.saveMD.setVisible(False)
+
+
+
+
+
+    def addMtdt(self):
+        print("the button worked")
+
+
+
 
     def selectionMorpher(self, prev):
         # not totally sure why i made this its own function....
@@ -160,8 +184,6 @@ class pbView(QWidget):
 
 
 
-
-
     def keyPressEvent(self, event):
         print(event.key())
         if event.key() == 16777235:
@@ -172,6 +194,8 @@ class pbView(QWidget):
                 self.enterMD.setVisible(True)
                 self.saveMD.setVisible(True)
                 self.textbox.setVisible(True)
+                self.pListWidg.setVisible(True)
+                self.tListWidg.setVisible(True)
                 # then resize label
                 self.labels[self.pbModel.index].resize(self.bigLabSiz, self.bigLabSiz)
                 self.labels[self.pbModel.index].move(int(self.wid*0.25), int(self.wid*0.03125))
@@ -199,6 +223,8 @@ class pbView(QWidget):
                 self.saveMD.setVisible(False)
                 self.enterMD.setVisible(False)
                 self.textbox.setVisible(False)
+                self.pListWidg.setVisible(False)
+                self.tListWidg.setVisible(False)
 
                 spacingNum = int(self.wid*0.03125)
 
@@ -330,6 +356,16 @@ class pbView(QWidget):
                 self.labels[i].setPixmap \
                     (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                      .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
+
+
+
+class buttons(QPushButton):
+    def __init__(self, pbM):
+        super().__init__()
+
+
+
+
 
 if __name__ == '__main__':
 
