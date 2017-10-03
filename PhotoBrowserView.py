@@ -13,7 +13,7 @@
 # For now, the program only works with 10 pictures, but that can be easily changed in the future
 
 import sys
-import PhotoBrowserModel
+from CSC690HW1PhotoBrowser import PhotoBrowserModel
 import pickle
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
 from PyQt5.QtCore import Qt, QUrl
@@ -51,13 +51,13 @@ class pbView(QWidget):
         self.textbox.resize(280, 40)
         self.textbox.setFocusPolicy(Qt.ClickFocus)
         self.textbox.setVisible(False)
-
         self.metaLists = []
         for j in range (0, 10, 1):
             self.metaLists.append([])
 
         self.pickleList = []
 
+        self.loadMetaData()
 
 
         self.initUI()
@@ -108,26 +108,55 @@ class pbView(QWidget):
 
     def saveMetaData(self):
 
-        md1 = open("metaData1.p")
-        pickle.dump(self.metaLists[0], md1)
-        md2 = open("metaData2.p")
-        pickle.dump(self.metaLists[1], md2)
-        md3 = open("metaData3.p")
-        pickle.dump(self.metaLists[0], md3)
-        md4 = open("metaData4.p")
-        pickle.dump(self.metaLists[0], md4)
-        md5 = open("metaData5.p")
-        pickle.dump(self.metaLists[0], md5)
-        md6 = open("metaData6.p")
-        pickle.dump(self.metaLists[0], md6)
-        md7 = open("metaData7.p")
-        pickle.dump(self.metaLists[0], md7)
-        md8 = open("metaData8.p")
-        pickle.dump(self.metaLists[0], md8)
-        md9 = open("metaData9.p")
-        pickle.dump(self.metaLists[0], md9)
-        md10 = open("metaData10.p")
-        pickle.dump(self.metaLists[0], md10)
+        md1 = open("metaData.p", 'wb')
+        pickle.dump(self.metaLists, md1)
+
+        # md1 = open("metaData1.p")
+        # pickle.dump(self.metaLists[0], md1)
+        # md2 = open("metaData2.p")
+        # pickle.dump(self.metaLists[1], md2)
+        # md3 = open("metaData3.p")
+        # pickle.dump(self.metaLists[0], md3)
+        # md4 = open("metaData4.p")
+        # pickle.dump(self.metaLists[0], md4)
+        # md5 = open("metaData5.p")
+        # pickle.dump(self.metaLists[0], md5)
+        # md6 = open("metaData6.p")
+        # pickle.dump(self.metaLists[0], md6)
+        # md7 = open("metaData7.p")
+        # pickle.dump(self.metaLists[0], md7)
+        # md8 = open("metaData8.p")
+        # pickle.dump(self.metaLists[0], md8)
+        # md9 = open("metaData9.p")
+        # pickle.dump(self.metaLists[0], md9)
+        # md10 = open("metaData10.p")
+        # pickle.dump(self.metaLists[0], md10)
+
+    def loadMetaData(self):
+
+        md1 = open("metaData.p", 'rb')
+        self.metaLists = pickle.load(md1)
+
+        # md1 = open("metaData1.p")
+        # pickle.dump(self.metaLists[0], md1)
+        # md2 = open("metaData2.p")
+        # pickle.dump(self.metaLists[1], md2)
+        # md3 = open("metaData3.p")
+        # pickle.dump(self.metaLists[0], md3)
+        # md4 = open("metaData4.p")
+        # pickle.dump(self.metaLists[0], md4)
+        # md5 = open("metaData5.p")
+        # pickle.dump(self.metaLists[0], md5)
+        # md6 = open("metaData6.p")
+        # pickle.dump(self.metaLists[0], md6)
+        # md7 = open("metaData7.p")
+        # pickle.dump(self.metaLists[0], md7)
+        # md8 = open("metaData8.p")
+        # pickle.dump(self.metaLists[0], md8)
+        # md9 = open("metaData9.p")
+        # pickle.dump(self.metaLists[0], md9)
+        # md10 = open("metaData10.p")
+        # pickle.dump(self.metaLists[0], md10)
 
 
 
