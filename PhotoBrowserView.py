@@ -51,6 +51,15 @@ class pbView(QWidget):
         self.textbox.resize(280, 40)
         self.textbox.setFocusPolicy(Qt.ClickFocus)
         self.textbox.setVisible(False)
+
+        self.metaLists = []
+        for j in range (0, 10, 1):
+            self.metaLists.append([])
+
+        self.pickleList = []
+
+
+
         self.initUI()
 
         self.selectionMorpher(0)
@@ -96,6 +105,33 @@ class pbView(QWidget):
         #  but it changes the highlight color, and changes the previous color back to normal
         self.labels[prev].setStyleSheet("border: 10px solid purple")
         self.labels[self.pbModel.index].setStyleSheet("border: 10px solid orange")
+
+    def saveMetaData(self):
+
+        md1 = open("metaData1.p")
+        pickle.dump(self.metaLists[0], md1)
+        md2 = open("metaData2.p")
+        pickle.dump(self.metaLists[1], md2)
+        md3 = open("metaData3.p")
+        pickle.dump(self.metaLists[0], md3)
+        md4 = open("metaData4.p")
+        pickle.dump(self.metaLists[0], md4)
+        md5 = open("metaData5.p")
+        pickle.dump(self.metaLists[0], md5)
+        md6 = open("metaData6.p")
+        pickle.dump(self.metaLists[0], md6)
+        md7 = open("metaData7.p")
+        pickle.dump(self.metaLists[0], md7)
+        md8 = open("metaData8.p")
+        pickle.dump(self.metaLists[0], md8)
+        md9 = open("metaData9.p")
+        pickle.dump(self.metaLists[0], md9)
+        md10 = open("metaData10.p")
+        pickle.dump(self.metaLists[0], md10)
+
+
+
+
 
     def keyPressEvent(self, event):
         print(event.key())
