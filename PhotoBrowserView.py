@@ -14,6 +14,7 @@
 
 import sys
 import PhotoBrowserModel
+import pickle
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtMultimedia import QSoundEffect
