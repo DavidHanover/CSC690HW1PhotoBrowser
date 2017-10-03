@@ -66,6 +66,12 @@ class pbView(QWidget):
         self.label4 = QLabel(self)
         self.label5 = QLabel(self)
 
+        self.label1.setFocusPolicy(Qt.ClickFocus)
+        self.label2.setFocusPolicy(Qt.ClickFocus)
+        self.label3.setFocusPolicy(Qt.ClickFocus)
+        self.label4.setFocusPolicy(Qt.ClickFocus)
+        self.label5.setFocusPolicy(Qt.ClickFocus)
+
         # Store labels
         self.labels = [self.label1, self.label2, self.label3, self.label4, self.label5]
 
