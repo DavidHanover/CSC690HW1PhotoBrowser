@@ -13,10 +13,10 @@
 # For now, the program only works with 10 pictures, but that can be easily changed in the future
 
 import sys
-from CSC690HW1PhotoBrowser import PhotoBrowserModel
+import PhotoBrowserModel
 import pickle
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QListWidget, QAbstractButton
-from PyQt5.QtCore import Qt, QUrl, QObject, pyqtSlot
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QListWidget
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtMultimedia import QSoundEffect
 
 
@@ -30,17 +30,21 @@ class pbView(QWidget):
             self.wid = int(sys.argv[1])
             if self.wid > 1200 or self.wid < 900:
                 self.wid = 1200
-        self.len = int(self.wid*0.5625)
+        self.len = int(self.wid*0.75)
         self.spacingNum  = int(self.wid*0.03125)
         self.labSiz = int(self.wid*0.1875)
-        self.ySpace = int(self.len * 0.167)
+        self.ySpace = int(self.len * 0.3)
         self.bigLabSiz = int(self.wid*0.5)
         self.pbModel = pbM
         self.textbox = QLineEdit(self)
         self.textbox.move(10, self.len-120)
-        self.textbox.resize(280, 40)
+
+        self.textWid = int(self.wid*0.233)
+        self.textLen = int(self.len*0.045)
+
+        self.textbox.resize(self.textWid, self.textLen)
         self.textbox.setFocusPolicy(Qt.ClickFocus)
-        self.textbox.setStyleSheet("background-color: Purple")
+        self.textbox.setStyleSheet("background-color: orange")
         self.textbox.setVisible(False)
         self.metaLists = []
         for j in range (0, 10, 1):
@@ -50,13 +54,29 @@ class pbView(QWidget):
         self.loadMetaData()
 
         self.pListWidg = QListWidget(self)
-        self.pListWidg.resize(200, self.len-50)
-        self.pListWidg.move(self.wid-250, 25)
+
+        self.pLWwidth = int(self.wid*0.167)
+        self.pLWlength = int (self.len*0.056)
+
+        self.pListWidg.resize(self.pLWwidth, self.len-self.pLWlength)
+
+        self.pLWmoveX = int(self.wid*0.208)
+        self.pLWmovey = int(self.len*0.028)
+
+        self.pListWidg.move(self.wid-self.pLWmoveX, self.pLWmovey)
         self.pListWidg.setVisible(False)
 
         self.tListWidg = QListWidget(self)
-        self.tListWidg.resize(200, self.len-160)
-        self.tListWidg.move(50, 25)
+
+        self.tLWwidth = int(self.wid*0.17)
+        self.tLWlength = int(self.len*0.18)
+
+        self.tListWidg.resize(self.tLWwidth, self.len-175)
+
+        self.tLWmoveX = int(self.wid*0.0417)
+        self.tLWmoveY = int(self.len*0.028)
+
+        self.tListWidg.move(self.tLWmoveX, self.tLWmoveY)
         self.tListWidg.setVisible(False)
 
 
@@ -101,12 +121,22 @@ class pbView(QWidget):
         self.sound2.setSource(QUrl.fromLocalFile('Click2.wav'))
 
         self.enterMD = QPushButton('Enter', self)
-        self.enterMD.clicked.connect(self.addMtdt())
+        self.enterMD.clicked.connect(self.addMtdt)
         self.saveMD = QPushButton('Save', self)
-        self.enterMD.resize(100, 55)
-        self.saveMD.resize(100, 55)
-        self.enterMD.move(25, self.len - 75)
-        self.saveMD.move(150, self.len - 75)
+        self.saveMD.clicked.connect(self.saveMtdt)
+
+        self.buttonSzX = int (self.wid*0.083)
+        self.buttonSzY = int (self.len*0.061)
+
+        self.enterMD.resize(self.buttonSzX, self.buttonSzY)
+        self.saveMD.resize(self.buttonSzX, self.buttonSzY)
+
+        self.buttonMoveY = int(self.len*0.083)
+        self.enterMoveX = int (self.wid*0.021)
+        self.saveMoveX = int(self.wid*0.125)
+
+        self.enterMD.move(self.enterMoveX, self.len - self.buttonMoveY)
+        self.saveMD.move(self.saveMoveX, self.len - self.buttonMoveY)
         self.enterMD.setFocusPolicy(Qt.NoFocus)
         self.saveMD.setFocusPolicy(Qt.NoFocus)
         self.enterMD.setStyleSheet("background-color: Orange")
@@ -120,6 +150,17 @@ class pbView(QWidget):
 
     def addMtdt(self):
         print("the button worked")
+        self.tListWidg.addItem(self.textbox.text())
+        self.tempList.append(self.textbox.text())
+
+
+    def saveMtdt(self):
+        for g in range (len(self.tempList), 0, -1):
+            self.metaLists[self.pbModel.indexes[self.pbModel.index]].append(self.tempList.pop())
+            self.pListWidg.clear()
+            self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
+            self.tListWidg.clear()
+            self.saveMetaData()
 
 
 
@@ -196,6 +237,7 @@ class pbView(QWidget):
                 self.textbox.setVisible(True)
                 self.pListWidg.setVisible(True)
                 self.tListWidg.setVisible(True)
+                self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
                 # then resize label
                 self.labels[self.pbModel.index].resize(self.bigLabSiz, self.bigLabSiz)
                 self.labels[self.pbModel.index].move(int(self.wid*0.25), int(self.wid*0.03125))
@@ -225,6 +267,8 @@ class pbView(QWidget):
                 self.textbox.setVisible(False)
                 self.pListWidg.setVisible(False)
                 self.tListWidg.setVisible(False)
+                self.pListWidg.clear()
+                self.tListWidg.clear()
 
                 spacingNum = int(self.wid*0.03125)
 
@@ -260,6 +304,9 @@ class pbView(QWidget):
                     self.labels[i].setPixmap \
                         (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                          .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
+
+                self.pListWidg.clear()
+                self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
 
             # in regular mode, however, wait until you're at the edge, and then change them all by five
             if self.pbModel.mode == 0:
@@ -303,6 +350,9 @@ class pbView(QWidget):
                         (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                          .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
 
+                self.pListWidg.clear()
+                self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
+
             # regular mode, increment by one & play sound 1
             if self.pbModel.mode == 0:
                 tmp = self.pbModel.index
@@ -335,6 +385,10 @@ class pbView(QWidget):
                     if self.pbModel.indexes[i] == -1:
                         self.pbModel.indexes[i] = 9
 
+            if self.pbModel.mode==1:
+                self.pListWidg.clear()
+                self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
+
             # reset all the pixmaps and make sure they're scaled
             for i in range(0, 5, 1):
                 self.labels[i].setPixmap \
@@ -350,6 +404,10 @@ class pbView(QWidget):
                     self.pbModel.indexes[i] -= 1
                     if self.pbModel.indexes[i] == -1:
                         self.pbModel.indexes[i] = 9
+
+            if self.pbModel.mode == 1:
+                self.pListWidg.clear()
+                self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
 
             # reset all the pixmaps and make sure they're scaled
             for i in range(0, 5, 1):
