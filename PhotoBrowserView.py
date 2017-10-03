@@ -14,8 +14,7 @@
 
 import sys
 import PhotoBrowserModel
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtMultimedia import QSoundEffect
 
@@ -36,10 +35,23 @@ class pbView(QWidget):
         self.ySpace = int(self.len * 0.167)
         self.bigLabSiz = int(self.wid*0.5)
         self.pbModel = pbM
+        self.enterMD = QPushButton('Enter', self)
+        self.saveMD = QPushButton('Save', self)
+        self.enterMD.resize(100, 55)
+        self.saveMD.resize(100, 55)
+        self.enterMD.move(25, self.len-75)
+        self.saveMD.move(150, self.len-75)
+        self.enterMD.setFocusPolicy(Qt.NoFocus)
+        self.saveMD.setFocusPolicy(Qt.NoFocus)
+        self.enterMD.setVisible(False)
+        self.saveMD.setVisible(False)
+        self.textbox = QLineEdit(self)
+        self.textbox.move(20, 20)
+        self.textbox.resize(280, 40)
+        self.textbox.setFocusPolicy(Qt.ClickFocus)
         self.initUI()
 
         self.selectionMorpher(0)
-
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -58,17 +70,11 @@ class pbView(QWidget):
 
         # Loop for initializing labels
 
-
         for i in range (0, 5, 1):
             self.labels[i].resize(self.labSiz, self.labSiz)
             self.labels[i].move(self.spacingNum, self.ySpace)
             self.labels[i].setStyleSheet("border: 10px solid purple")
             self.spacingNum += (self.labSiz+2)
-
-
-
-
-
 
         self.show()
 
@@ -76,7 +82,6 @@ class pbView(QWidget):
         self.sound2 = QSoundEffect()
         self.sound1.setSource(QUrl.fromLocalFile('Click1.wav'))
         self.sound2.setSource(QUrl.fromLocalFile('Click2.wav'))
-
 
     def selectionMorpher(self, prev):
         # not totally sure why i made this its own function....
@@ -91,6 +96,8 @@ class pbView(QWidget):
             if self.pbModel.mode == 0:
                 self.pbModel.mode = 1
                 self.sound2.play()
+                self.enterMD.setVisible(True)
+                self.saveMD.setVisible(True)
                 # then resize label
                 self.labels[self.pbModel.index].resize(self.bigLabSiz, self.bigLabSiz)
                 self.labels[self.pbModel.index].move(int(self.wid*0.25), int(self.wid*0.03125))
@@ -111,11 +118,12 @@ class pbView(QWidget):
 
         if event.key() == 16777237:
 
-
             # when down is hit, toggle mode back to normal if not already & play sound1
             if self.pbModel.mode == 1:
                 self.pbModel.mode = 0
                 self.sound1.play()
+                self.saveMD.setVisible(False)
+                self.enterMD.setVisible(False)
 
                 spacingNum = int(self.wid*0.03125)
 
@@ -123,7 +131,7 @@ class pbView(QWidget):
                 # using code copied from initUI
                 for i in range(0, 5, 1):
                     self.labels[i].resize(self.labSiz, self.labSiz)
-                    self.labels[i].move(spacingNum, 150)
+                    self.labels[i].move(spacingNum, self.ySpace)
                     self.labels[i].setStyleSheet("border: 10px solid purple")
                     spacingNum += self.labSiz+2
             self.labels[self.pbModel.index].setStyleSheet("border: 10px solid orange")
@@ -151,7 +159,6 @@ class pbView(QWidget):
                     self.labels[i].setPixmap \
                         (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                          .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
-
 
             # in regular mode, however, wait until you're at the edge, and then change them all by five
             if self.pbModel.mode == 0:
@@ -248,7 +255,6 @@ class pbView(QWidget):
                 self.labels[i].setPixmap \
                     (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                      .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
-
 
 if __name__ == '__main__':
 
