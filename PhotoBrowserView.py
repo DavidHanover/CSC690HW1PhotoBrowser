@@ -5,7 +5,7 @@
 # Usage: [Run with Python]
 # System: [Running on Windows10 64bit, AMD Ryzen 7 chipset  AND Intel i7-6500u chipset]
 # Description: [Browses a selection of images titled "Donut1.jpg"
-# through "Donut10.jpg" located in the same folder as PhotoBrowser.py]
+# through "Donut10.jpg" located in the same folder as PhotoBrowserView.py]
 #
 # NOTE: If you wish to substitute test pictures for the Donut.jpgs, change
 # the strings in the QPixmap arguments that start at Line 56.
@@ -13,25 +13,37 @@
 # For now, the program only works with 10 pictures, but that can be easily changed in the future
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+import PhotoBrowserModel
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtMultimedia import QSoundEffect
 
 
-class Window(QWidget):
-    def __init__(self):
+class pbView(QWidget):
+    def __init__(self, pbM):
         super().__init__()
         self.title = 'PyQt5 Photo Browser'
-        self.index = 0
-        self.mode = 0
+
+        self.wid = 1200
+        if len(sys.argv) > 1:
+            self.wid = int(sys.argv[1])
+            if self.wid > 1200 or self.wid < 900:
+                self.wid = 1200
+        self.len = int(self.wid*0.5625)
+        self.spacingNum  = int(self.wid*0.03125)
+        self.labSiz = int(self.wid*0.1875)
+        self.ySpace = int(self.len * 0.167)
+        self.bigLabSiz = int(self.wid*0.5)
+        self.pbModel = pbM
         self.initUI()
 
         self.selectionMorpher(0)
 
+
     def initUI(self):
         self.setWindowTitle(self.title)
-        self.setGeometry(100, 100, 1600, 900)
+        self.setGeometry(100, 100, self.wid, self.len)
         self.setStyleSheet("background-color: skyblue")
 
         # Create labels
@@ -45,44 +57,18 @@ class Window(QWidget):
         self.labels = [self.label1, self.label2, self.label3, self.label4, self.label5]
 
         # Loop for initializing labels
-        spacingNum  = 50
+
 
         for i in range (0, 5, 1):
-            self.labels[i].resize(300, 300)
-            self.labels[i].move(spacingNum, 150)
+            self.labels[i].resize(self.labSiz, self.labSiz)
+            self.labels[i].move(self.spacingNum, self.ySpace)
             self.labels[i].setStyleSheet("border: 10px solid purple")
-            spacingNum += 302
+            self.spacingNum += (self.labSiz+2)
 
-        # Create pixmaps   CHANGE DONUT NAMES IF YOU WISH TO SUBSTITUTE TEST PICTURES
-        self.pixmap1 = QPixmap("Donut1.jpg")
-        self.pixmap2 = QPixmap("Donut2.jpg")
-        self.pixmap3 = QPixmap("Donut3.jpg")
-        self.pixmap4 = QPixmap("Donut4.jpg")
-        self.pixmap5 = QPixmap("Donut5.jpg")
-        self.pixmap6 = QPixmap("Donut6.jpg")
-        self.pixmap7 = QPixmap("Donut7.jpg")
-        self.pixmap8 = QPixmap("Donut8.jpg")
-        self.pixmap9 = QPixmap("Donut9.jpg")
-        self.pixmap10 = QPixmap("Donut10.jpg")
 
-        # Store pixmaps
-        self.pixmaps = [self.pixmap1, self.pixmap2, self.pixmap3,
-                        self.pixmap4, self.pixmap5, self.pixmap6,
-                        self.pixmap7, self.pixmap8, self.pixmap9,
-                        self.pixmap10]
 
-        self.OGpixmaps = self.pixmaps
 
-        # Set initial pixmaps to labels
-        for i in range(0, 5, 1):
-            self.pixmaps[i] = self.pixmaps[i].scaled(self.labels[i].size(), Qt.KeepAspectRatio)
-            self.labels[i].setPixmap(self.pixmaps[i])
 
-        # Can't figure out how to access a QLabel's pixmap, so create array of
-        # indexes to keep track of pixmaps
-        self.indexes = []
-        for i in range(0, 5, 1):
-            self.indexes.append(i)
 
         self.show()
 
@@ -96,139 +82,139 @@ class Window(QWidget):
         # not totally sure why i made this its own function....
         #  but it changes the highlight color, and changes the previous color back to normal
         self.labels[prev].setStyleSheet("border: 10px solid purple")
-        self.labels[self.index].setStyleSheet("border: 10px solid orange")
+        self.labels[self.pbModel.index].setStyleSheet("border: 10px solid orange")
 
     def keyPressEvent(self, event):
         print(event.key())
-        if event.key()==16777235:
+        if event.key() == 16777235:
             # when up is hit, change mode if not already in mode 1 & play sound2
-            if self.mode == 0:
-                self.mode = 1
+            if self.pbModel.mode == 0:
+                self.pbModel.mode = 1
                 self.sound2.play()
                 # then resize label
-                self.labels[self.index].resize(800, 800)
-                self.labels[self.index].move(400, 50)
+                self.labels[self.pbModel.index].resize(self.bigLabSiz, self.bigLabSiz)
+                self.labels[self.pbModel.index].move(int(self.wid*0.25), int(self.wid*0.03125))
                 # resize all other labels to be invisible
-                i = self.index + 1
+                i = self.pbModel.index + 1
                 while True:
                     if i == 5:
                         i = 0
-                    if i == self.index:
+                    if i == self.pbModel.index:
                         break
                     self.labels[i].resize(0, 0)
                     i += 1
 
-                self.labels[self.index]\
-                    .setPixmap(self.pixmaps[self.indexes[self.index]]
-                               .scaled(self.labels[self.index]
+                self.labels[self.pbModel.index]\
+                    .setPixmap(self.pbModel.pixmaps[self.pbModel.indexes[self.pbModel.index]]
+                               .scaled(self.labels[self.pbModel.index]
                                        .size(), Qt.KeepAspectRatio))
 
-        if event.key()==16777237:
+        if event.key() == 16777237:
 
 
             # when down is hit, toggle mode back to normal if not already & play sound1
-            if self.mode == 1:
-                self.mode = 0
+            if self.pbModel.mode == 1:
+                self.pbModel.mode = 0
                 self.sound1.play()
 
-                spacingNum = 50
+                spacingNum = int(self.wid*0.03125)
 
                 # Reset the size and positions of all the labels,
                 # using code copied from initUI
                 for i in range(0, 5, 1):
-                    self.labels[i].resize(300, 300)
+                    self.labels[i].resize(self.labSiz, self.labSiz)
                     self.labels[i].move(spacingNum, 150)
                     self.labels[i].setStyleSheet("border: 10px solid purple")
-                    spacingNum += 302
-            self.labels[self.index].setStyleSheet("border: 10px solid orange")
+                    spacingNum += self.labSiz+2
+            self.labels[self.pbModel.index].setStyleSheet("border: 10px solid orange")
 
             # Reset the size of all the pixmaps back to normal
             for i in range(0, 5, 1):
-                self.pixmaps[self.indexes[i]] = \
-                    self.pixmaps[self.indexes[i]]\
+                self.pbModel.pixmaps[self.pbModel.indexes[i]] = \
+                    self.pbModel.pixmaps[self.pbModel.indexes[i]]\
                         .scaled(self.labels[i].size(), Qt.KeepAspectRatio)
 
-                self.labels[i].setPixmap(self.pixmaps[self.indexes[i]])
+                self.labels[i].setPixmap(self.pbModel.pixmaps[self.pbModel.indexes[i]])
 
         if event.key() == 16777234:
 
             # in zoomed mode, just change the pixmap you're currently viewing & play sound
             # IMO it's not a big deal, but this shifts the entire order in regular mode as well
-            if self.mode == 1:
+            if self.pbModel.mode == 1:
                 self.sound1.play()
                 for i in range(0, 5, 1):
-                    self.indexes[i] -= 1
-                    if self.indexes[i] == -1:
-                        self.indexes[i] = 9
+                    self.pbModel.indexes[i] -= 1
+                    if self.pbModel.indexes[i] == -1:
+                        self.pbModel.indexes[i] = 9
 
                 for i in range(0, 5, 1):
                     self.labels[i].setPixmap \
-                        (self.pixmaps[self.indexes[i]]
+                        (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                          .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
 
 
             # in regular mode, however, wait until you're at the edge, and then change them all by five
-            if self.mode == 0:
-                tmp = self.index
-                self.index -= 1
-                if self.index!= -1:
+            if self.pbModel.mode == 0:
+                tmp = self.pbModel.index
+                self.pbModel.index -= 1
+                if self.pbModel.index!= -1:
                     self.sound1.play()
 
 
                 # if you reach the left end, wrap around, and
-                if self.index == -1:
-                    self.index = 4
+                if self.pbModel.index == -1:
+                    self.pbModel.index = 4
                     self.sound2.play()
 
                     # decrement the pixmap indexes by five
                     for i in range (0, 5, 1):
                         for i in range (0, 5, 1):
-                            self.indexes[i]-=1
-                            if self.indexes[i]==-1:
-                                self.indexes[i]=9
+                            self.pbModel.indexes[i]-=1
+                            if self.pbModel.indexes[i]==-1:
+                                self.pbModel.indexes[i]=9
 
                     # reset all the pixmaps and make sure they're scaled
                     for i in range (0, 5, 1):
                         self.labels[i].setPixmap\
-                            (self.pixmaps[self.indexes[i]]
+                            (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                              .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
                 self.selectionMorpher(tmp)
 
         if event.key() == 16777236:
 
             # zoomed mode, just increment by one, & play sound
-            if self.mode == 1:
+            if self.pbModel.mode == 1:
                 self.sound1.play()
                 for i in range(0, 5, 1):
-                    self.indexes[i] += 1
-                    if self.indexes[i] == 10:
-                        self.indexes[i] = 0
+                    self.pbModel.indexes[i] += 1
+                    if self.pbModel.indexes[i] == 10:
+                        self.pbModel.indexes[i] = 0
 
                 for i in range(0, 5, 1):
                     self.labels[i].setPixmap \
-                        (self.pixmaps[self.indexes[i]]
+                        (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                          .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
 
             # regular mode, increment by one & play sound 1
-            if self.mode == 0:
-                tmp = self.index
-                self.index += 1
-                if self.index!=5:
+            if self.pbModel.mode == 0:
+                tmp = self.pbModel.index
+                self.pbModel.index += 1
+                if self.pbModel.index!=5:
                     self.sound1.play()
                 # if you reach right end, wrap around, play sound2, and
-                if self.index == 5:
-                    self.index = 0
+                if self.pbModel.index == 5:
+                    self.pbModel.index = 0
                     self.sound2.play()
                     # increment the pixmap indexes by five
                     for i in range (0, 5, 1):
                         for i in range (0, 5, 1):
-                            self.indexes[i]+=1
-                            if self.indexes[i]==10:
-                                self.indexes[i]=0
+                            self.pbModel.indexes[i]+=1
+                            if self.pbModel.indexes[i]==10:
+                                self.pbModel.indexes[i]=0
                     # reset all the pixmaps and make sure they're scaled
                     for i in range (0, 5, 1):
                         self.labels[i].setPixmap\
-                            (self.pixmaps[self.indexes[i]]
+                            (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                              .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
                 self.selectionMorpher(tmp)
 
@@ -237,14 +223,14 @@ class Window(QWidget):
             self.sound2.play()
             for i in range(0, 5, 1):
                 for i in range(0, 5, 1):
-                    self.indexes[i] -= 1
-                    if self.indexes[i] == -1:
-                        self.indexes[i] = 9
+                    self.pbModel.indexes[i] -= 1
+                    if self.pbModel.indexes[i] == -1:
+                        self.pbModel.indexes[i] = 9
 
             # reset all the pixmaps and make sure they're scaled
             for i in range(0, 5, 1):
                 self.labels[i].setPixmap \
-                    (self.pixmaps[self.indexes[i]]
+                    (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                      .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
 
 
@@ -253,18 +239,25 @@ class Window(QWidget):
             self.sound2.play()
             for i in range(0, 5, 1):
                 for i in range(0, 5, 1):
-                    self.indexes[i] -= 1
-                    if self.indexes[i] == -1:
-                        self.indexes[i] = 9
+                    self.pbModel.indexes[i] -= 1
+                    if self.pbModel.indexes[i] == -1:
+                        self.pbModel.indexes[i] = 9
 
             # reset all the pixmaps and make sure they're scaled
             for i in range(0, 5, 1):
                 self.labels[i].setPixmap \
-                    (self.pixmaps[self.indexes[i]]
+                    (self.pbModel.pixmaps[self.pbModel.indexes[i]]
                      .scaled(self.labels[i].size(), Qt.KeepAspectRatio))
 
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
-    window = Window()
+    myView = pbView(PhotoBrowserModel.pbModel())
+
+    # Set initial pixmaps to labels
+    for i in range(0, 5, 1):
+        myView.pbModel.pixmaps[i] = myView.pbModel.pixmaps[i].scaled(myView.labels[i].size(), Qt.KeepAspectRatio)
+        myView.labels[i].setPixmap(myView.pbModel.pixmaps[i])
+
     sys.exit(app.exec_())
