@@ -49,6 +49,7 @@ class pbView(QWidget):
         self.textbox.move(20, 20)
         self.textbox.resize(280, 40)
         self.textbox.setFocusPolicy(Qt.ClickFocus)
+        self.textbox.setVisible(False)
         self.initUI()
 
         self.selectionMorpher(0)
@@ -98,6 +99,7 @@ class pbView(QWidget):
                 self.sound2.play()
                 self.enterMD.setVisible(True)
                 self.saveMD.setVisible(True)
+                self.textbox.setVisible(True)
                 # then resize label
                 self.labels[self.pbModel.index].resize(self.bigLabSiz, self.bigLabSiz)
                 self.labels[self.pbModel.index].move(int(self.wid*0.25), int(self.wid*0.03125))
@@ -124,6 +126,7 @@ class pbView(QWidget):
                 self.sound1.play()
                 self.saveMD.setVisible(False)
                 self.enterMD.setVisible(False)
+                self.textbox.setVisible(False)
 
                 spacingNum = int(self.wid*0.03125)
 
