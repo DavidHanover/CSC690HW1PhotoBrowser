@@ -149,7 +149,6 @@ class pbView(QWidget):
 
 
     def addMtdt(self):
-        print("the button worked")
         self.tListWidg.addItem(self.textbox.text())
         self.tempList.append(self.textbox.text())
 
