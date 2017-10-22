@@ -1,4 +1,5 @@
 from PyQt5.QtGui import QPixmap
+import requests
 
 class pbModel():
     def __init__(self):

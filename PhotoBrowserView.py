@@ -31,21 +31,45 @@ class pbView(QWidget):
             if self.wid > 1200 or self.wid < 900:
                 self.wid = 1200
         self.len = int(self.wid*0.75)
+
+        self.buttonSzX = int(self.wid * 0.083)
+        self.buttonSzY = int(self.len * 0.061)
+
         self.spacingNum  = int(self.wid*0.03125)
         self.labSiz = int(self.wid*0.1875)
         self.ySpace = int(self.len * 0.3)
         self.bigLabSiz = int(self.wid*0.5)
+
         self.pbModel = pbM
-        self.textbox = QLineEdit(self)
-        self.textbox.move(10, self.len-120)
+
+        self.mdTxbx = QLineEdit(self)
+        self.mdTxbx.move(10, self.len-120)
+
+        self.srchTxbx = QLineEdit(self)
+        self.srchTxbx.move(0, (self.len-100-(self.buttonSzY)))
+
+        self.srLenTxbx = QLineEdit(self)
+        self.srLenTxbx.move(self.wid-(self.wid/4), (self.len-100-(self.buttonSzY)))
+        self.MaxSrchRslts = QLabel (self)
+        self.MaxSrchRslts.setText( "Max Search Results:")
+        self.MaxSrchRslts.move(self.wid-(self.wid/4)-125, (self.len-90-(self.buttonSzY)))
+        self.MaxSrchRslts.setFocusPolicy(Qt.NoFocus)
 
         self.textWid = int(self.wid*0.233)
         self.textLen = int(self.len*0.045)
 
-        self.textbox.resize(self.textWid, self.textLen)
-        self.textbox.setFocusPolicy(Qt.ClickFocus)
-        self.textbox.setStyleSheet("background-color: orange")
-        self.textbox.setVisible(False)
+        self.srLenTxbx.resize(self.wid/4, self.textLen)
+        self.mdTxbx.resize(self.textWid, self.textLen)
+        self.srchTxbx.resize(self.wid/2, self.textLen)
+
+        self.mdTxbx.setFocusPolicy(Qt.ClickFocus)
+        self.srLenTxbx.setFocusPolicy(Qt.ClickFocus)
+        self.srchTxbx.setFocusPolicy(Qt.ClickFocus)
+        self.mdTxbx.setStyleSheet("background-color: orange")
+
+        self.mdTxbx.setVisible(False)
+        self.srchTxbx.setVisible(True)
+
         self.metaLists = []
         for j in range (0, 10, 1):
             self.metaLists.append([])
@@ -125,11 +149,22 @@ class pbView(QWidget):
         self.saveMD = QPushButton('Save', self)
         self.saveMD.clicked.connect(self.saveMtdt)
 
-        self.buttonSzX = int (self.wid*0.083)
-        self.buttonSzY = int (self.len*0.061)
+        self.testB = QPushButton('Test', self)
+        self.saveB = QPushButton('Save', self)
+        self.exitB = QPushButton('Exit', self)
+        self.deleteB = QPushButton('Delete', self)
+        self.searchB = QPushButton('Search', self)
+
+
 
         self.enterMD.resize(self.buttonSzX, self.buttonSzY)
         self.saveMD.resize(self.buttonSzX, self.buttonSzY)
+
+        self.testB.resize(self.buttonSzX, self.buttonSzY)
+        self.saveB.resize(self.buttonSzX, self.buttonSzY)
+        self.exitB.resize(self.buttonSzX, self.buttonSzY)
+        self.deleteB.resize(self.buttonSzX, self.buttonSzY)
+        self.searchB.resize(self.buttonSzX, self.buttonSzY)
 
         self.buttonMoveY = int(self.len*0.083)
         self.enterMoveX = int (self.wid*0.021)
@@ -137,20 +172,43 @@ class pbView(QWidget):
 
         self.enterMD.move(self.enterMoveX, self.len - self.buttonMoveY)
         self.saveMD.move(self.saveMoveX, self.len - self.buttonMoveY)
+
+        self.testB.move(0, self.len-100)
+        self.saveB.move(self.buttonSzX, self.len-100)
+        self.exitB.move(self.buttonSzX*2, self.len-100)
+        self.deleteB.move(self.buttonSzX*3, self.len-100)
+        self.searchB.move(self.buttonSzX*4, self.len-100)
+
         self.enterMD.setFocusPolicy(Qt.NoFocus)
         self.saveMD.setFocusPolicy(Qt.NoFocus)
+
+        self.testB.setFocusPolicy(Qt.NoFocus)
+        self.saveB.setFocusPolicy(Qt.NoFocus)
+        self.exitB.setFocusPolicy(Qt.NoFocus)
+        self.deleteB.setFocusPolicy(Qt.NoFocus)
+        self.searchB.setFocusPolicy(Qt.NoFocus)
+
         self.enterMD.setStyleSheet("background-color: Orange")
         self.saveMD.setStyleSheet("background-color: Orange")
+
+        self.testB.setStyleSheet("background-color: Orange")
+        self.saveB.setStyleSheet("background-color: Orange")
+        self.exitB.setStyleSheet("background-color: Orange")
+        self.deleteB.setStyleSheet("background-color: Orange")
+        self.searchB.setStyleSheet("background-color: Orange")
+
         self.enterMD.setVisible(False)
         self.saveMD.setVisible(False)
 
-
-
-
+        self.testB.setVisible(True)
+        self.saveB.setVisible(True)
+        self.exitB.setVisible(True)
+        self.deleteB.setVisible(True)
+        self.searchB.setVisible(True)
 
     def addMtdt(self):
-        self.tListWidg.addItem(self.textbox.text())
-        self.tempList.append(self.textbox.text())
+        self.tListWidg.addItem(self.mdTxbx.text())
+        self.tempList.append(self.mdTxbx.text())
 
 
     def saveMtdt(self):
@@ -233,9 +291,21 @@ class pbView(QWidget):
                 self.sound2.play()
                 self.enterMD.setVisible(True)
                 self.saveMD.setVisible(True)
-                self.textbox.setVisible(True)
+
+                self.mdTxbx.setVisible(True)
+                self.srchTxbx.setVisible(False)
+                self.srLenTxbx.setVisible(False)
+                self.MaxSrchRslts.setVisible(False)
+
                 self.pListWidg.setVisible(True)
                 self.tListWidg.setVisible(True)
+
+                self.testB.setVisible(False)
+                self.saveB.setVisible(False)
+                self.exitB.setVisible(False)
+                self.deleteB.setVisible(False)
+                self.searchB.setVisible(False)
+
                 self.pListWidg.addItems(self.metaLists[self.pbModel.indexes[self.pbModel.index]])
                 # then resize label
                 self.labels[self.pbModel.index].resize(self.bigLabSiz, self.bigLabSiz)
@@ -263,9 +333,21 @@ class pbView(QWidget):
                 self.sound1.play()
                 self.saveMD.setVisible(False)
                 self.enterMD.setVisible(False)
-                self.textbox.setVisible(False)
+                self.srLenTxbx.setVisible(True)
+                self.MaxSrchRslts.setVisible(True)
+
+                self.mdTxbx.setVisible(False)
+                self.srchTxbx.setVisible(True)
+
                 self.pListWidg.setVisible(False)
                 self.tListWidg.setVisible(False)
+
+                self.testB.setVisible(True)
+                self.saveB.setVisible(True)
+                self.exitB.setVisible(True)
+                self.deleteB.setVisible(True)
+                self.searchB.setVisible(True)
+
                 self.pListWidg.clear()
                 self.tListWidg.clear()
 
