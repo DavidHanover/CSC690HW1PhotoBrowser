@@ -15,6 +15,10 @@
 import sys
 import PhotoBrowserModel
 import pickle
+import json
+import requests
+from urllib import request
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QListWidget
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtMultimedia import QSoundEffect
@@ -24,7 +28,6 @@ class pbView(QWidget):
     def __init__(self, pbM):
         super().__init__()
         self.title = 'PyQt5 Photo Browser'
-
         self.wid = 1200
         if len(sys.argv) > 1:
             self.wid = int(sys.argv[1])
@@ -71,7 +74,7 @@ class pbView(QWidget):
         self.srchTxbx.setVisible(True)
 
         self.metaLists = []
-        for j in range (0, 10, 1):
+        for j in range (0, self.pbModel.numPixmaps, 1):
             self.metaLists.append([])
 
         self.tempList = []
@@ -103,6 +106,11 @@ class pbView(QWidget):
         self.tListWidg.move(self.tLWmoveX, self.tLWmoveY)
         self.tListWidg.setVisible(False)
 
+        self.httpFarm = 'https://farm'
+        self.staticFlickr= '.staticflickr.com/'
+        self.slash = '/'
+        self.underscore = '_'
+        self.jpg = '.jpg'
 
         self.initUI()
 
@@ -154,6 +162,7 @@ class pbView(QWidget):
         self.exitB = QPushButton('Exit', self)
         self.deleteB = QPushButton('Delete', self)
         self.searchB = QPushButton('Search', self)
+        self.searchB.clicked.connect(self.searchFlickr)
 
 
 
@@ -280,6 +289,43 @@ class pbView(QWidget):
         # md10 = open("metaData10.p")
         # pickle.dump(self.metaLists[0], md10)
 
+    def searchFlickr(self):
+            numSrch = 5
+            req = 'https://api.flickr.com/services/rest/'
+            req = req + '?method=flickr.photos.search'
+            req = req + '&per_page='
+            if(self.srchTxbx.text() != None):
+                numSrch = int(self.srLenTxbx.text())
+                req = req + str(numSrch)
+            else:
+                req = req + str(numSrch)
+            self.pbModel.numPixmaps += numSrch
+            req = req + '&format=json&nojsoncallback=1'
+            req = req + '&api_key=87a3d8568f40ff3e1d70d1dd086892e8'
+            req = req + '&tags='
+            srchString = str(self.srchTxbx.text())
+            srchString.replace(' ', '%20')
+            req = req + srchString
+            jsonRespDict = requests.get(req).json()
+            fpm = jsonRespDict['photos']
+            for p in fpm['photo']:
+                path = self.httpFarm
+                path += str(p['farm'])
+                path += self.staticFlickr
+                path += str(p['server'])
+                path += self.slash
+                path += str(p['id'])
+                path += self.underscore
+                path += str(p['secret'])
+                path += self.jpg
+                self.pbModel.locations.append(path)
+                urldata = request.urlopen(path).read()
+                pixmapX = QPixmap()
+                pixmapX.loadFromData(urldata)
+                self.pbModel.pixmaps.append(pixmapX)
+
+
+
 
 
     def keyPressEvent(self, event):
@@ -319,11 +365,18 @@ class pbView(QWidget):
                         break
                     self.labels[i].resize(0, 0)
                     i += 1
+                if (self.pbModel.indexes[self.pbModel.index] < 10):
+                    self.labels[self.pbModel.index]\
+                        .setPixmap(self.pbModel.pixmaps[self.pbModel.indexes[self.pbModel.index]]
+                                   .scaled(self.labels[self.pbModel.index]
+                                           .size(), Qt.KeepAspectRatio))
+                else:
+                    urldata = request.urlopen(self.pbModel.locations[self.pbModel.indexes[self.pbModel.index]]).read()
+                    self.pbModel.pixmaps[self.pbModel.indexes[self.pbModel.index]].loadFromData(urldata)
+                #urldata = request.urlopen(path).read()
+                #pixmapX = QPixmap()
+                #pixmapX.loadFromData(urldata)
 
-                self.labels[self.pbModel.index]\
-                    .setPixmap(self.pbModel.pixmaps[self.pbModel.indexes[self.pbModel.index]]
-                               .scaled(self.labels[self.pbModel.index]
-                                       .size(), Qt.KeepAspectRatio))
 
         if event.key() == 16777237:
 
@@ -371,7 +424,7 @@ class pbView(QWidget):
                 self.labels[i].setPixmap(self.pbModel.pixmaps[self.pbModel.indexes[i]])
 
         if event.key() == 16777234:
-
+            # This is when Left key is hit
             # in zoomed mode, just change the pixmap you're currently viewing & play sound
             # IMO it's not a big deal, but this shifts the entire order in regular mode as well
             if self.pbModel.mode == 1:
@@ -379,7 +432,7 @@ class pbView(QWidget):
                 for i in range(0, 5, 1):
                     self.pbModel.indexes[i] -= 1
                     if self.pbModel.indexes[i] == -1:
-                        self.pbModel.indexes[i] = 9
+                        self.pbModel.indexes[i] = self.pbModel.numPixmaps - 1
 
                 for i in range(0, 5, 1):
                     self.labels[i].setPixmap \
@@ -407,7 +460,7 @@ class pbView(QWidget):
                         for i in range (0, 5, 1):
                             self.pbModel.indexes[i]-=1
                             if self.pbModel.indexes[i]==-1:
-                                self.pbModel.indexes[i]=9
+                                self.pbModel.indexes[i]=self.pbModel.numPixmaps - 1
 
                     # reset all the pixmaps and make sure they're scaled
                     for i in range (0, 5, 1):
@@ -417,13 +470,13 @@ class pbView(QWidget):
                 self.selectionMorpher(tmp)
 
         if event.key() == 16777236:
-
+            # This is when Right key is hit
             # zoomed mode, just increment by one, & play sound
             if self.pbModel.mode == 1:
                 self.sound1.play()
                 for i in range(0, 5, 1):
                     self.pbModel.indexes[i] += 1
-                    if self.pbModel.indexes[i] == 10:
+                    if self.pbModel.indexes[i] == self.pbModel.numPixmaps:
                         self.pbModel.indexes[i] = 0
 
                 for i in range(0, 5, 1):
@@ -448,7 +501,7 @@ class pbView(QWidget):
                     for i in range (0, 5, 1):
                         for i in range (0, 5, 1):
                             self.pbModel.indexes[i]+=1
-                            if self.pbModel.indexes[i]==10:
+                            if self.pbModel.indexes[i]==self.pbModel.numPixmaps:
                                 self.pbModel.indexes[i]=0
                     # reset all the pixmaps and make sure they're scaled
                     for i in range (0, 5, 1):
@@ -464,7 +517,7 @@ class pbView(QWidget):
                 for i in range(0, 5, 1):
                     self.pbModel.indexes[i] -= 1
                     if self.pbModel.indexes[i] == -1:
-                        self.pbModel.indexes[i] = 9
+                        self.pbModel.indexes[i] = self.pbModel.numPixmaps - 1
 
             if self.pbModel.mode==1:
                 self.pListWidg.clear()
@@ -478,13 +531,13 @@ class pbView(QWidget):
 
 
         if event.key()==46:
-            # if carrot right is hit, decrement the pixmap indexes by five
+            # if carrot right is hit, increment the pixmap indexes by five
             self.sound2.play()
             for i in range(0, 5, 1):
                 for i in range(0, 5, 1):
-                    self.pbModel.indexes[i] -= 1
-                    if self.pbModel.indexes[i] == -1:
-                        self.pbModel.indexes[i] = 9
+                    self.pbModel.indexes[i] += 1
+                    if self.pbModel.indexes[i] == self.pbModel.numPixmaps:
+                        self.pbModel.indexes[i] = 0
 
             if self.pbModel.mode == 1:
                 self.pListWidg.clear()
